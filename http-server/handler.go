@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type RequestBody struct {
+type CustomData struct {
 	Id   int64  `json:"id"`
 	Type string `json:"type"`
 }
@@ -48,29 +48,29 @@ func queryStrings(w http.ResponseWriter, req *http.Request) {
 }
 
 func jsonBody(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "hello world\n")
+	fmt.Printf("json body\n")
 
 	body, err := ioutil.ReadAll(req.Body)
 	defer req.Body.Close()
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	var data RequestBody
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
+	data := CustomData{}
+	if err = json.Unmarshal(body, &data); err != nil {
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
 	if _, err := json.Marshal(data); err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
 	fmt.Printf("Id: %v\n", data.Id)
-	fmt.Fprintf(w, "Id: %v\n", data.Id)
 	fmt.Printf("Type: %v\n", data.Type)
+
+	fmt.Fprintf(w, "Id: %v\n", data.Id)
 	fmt.Fprintf(w, "Type: %v\n", data.Type)
 }
