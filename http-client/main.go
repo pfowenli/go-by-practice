@@ -2,24 +2,24 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
 
 func main() {
+	url := ""
+	response := CustomResponse{}
 
-	res, err := http.Get("http://localhost:8080/api/v1/hello-world")
-	if err != nil {
-		panic(err)
-	}
+	url = "http://localhost:8080/api/v1/hello-world"
+	response = GetRequest(url)
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
-	}
+	fmt.Printf("url: %s\n", url)
+	fmt.Printf("HTTP status: %s\n", response.Status)
+	fmt.Printf("text: %s\n", response.Text)
 
-	defer res.Body.Close()
+	url = "http://localhost:8080/api/v2/json-body"
+	data := map[string]interface{}{"Id": 6, "Type": "Gorilla"}
+	response = PostRequest(url, data)
 
-	fmt.Printf("HTTP response status: %v\n", res.Status)
-	fmt.Printf("HTTP response body: %v\n", string(body))
+	fmt.Printf("url: %s\n", url)
+	fmt.Printf("HTTP status: %s\n", response.Status)
+	fmt.Printf("text: %s\n", response.Text)
 }
