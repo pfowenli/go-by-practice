@@ -1,15 +1,12 @@
 package main
 
-import (
-	"log"
-)
+import "log"
 
 func main() {
-	db := Database()
+	OpenDatabase()
 
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-	}
+	student := FindStudentById(1)
+	log.Println(student)
 
-	defer db.Close()
+	CloseDatabase()
 }
