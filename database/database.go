@@ -17,21 +17,24 @@ var (
 	db *sql.DB
 )
 
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
 func OpenDatabase() *sql.DB {
 	if db != nil {
 		return db
 	}
 
 	connection, err := sql.Open("mysql", "USERNAME:PASSWORD@tcp(127.0.0.1:3306)/test")
-	if err != nil {
-		log.Fatal(err)
-	}
+	failOnError(err, "Failed to connect to mysql")
 
 	db = connection
 
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-	}
+	err = db.Ping()
+	failOnError(err, "Failed to verify the connection")
 
 	return db
 }
@@ -43,9 +46,7 @@ func CloseDatabase() {
 
 func FindStudentById(id int) Student {
 	rows, err := db.Query("SELECT id, name, grade FROM student WHERE id = ?", id)
-	if err != nil {
-		log.Fatal(err)
-	}
+	failOnError(err, "Failed to execute a query")
 
 	defer rows.Close()
 
@@ -53,9 +54,7 @@ func FindStudentById(id int) Student {
 
 	for rows.Next() {
 		err := rows.Scan(&student.id, &student.name, &student.grade)
-		if err != nil {
-			log.Fatal(err)
-		}
+		failOnError(err, "Failed to copy values")
 	}
 
 	return student
