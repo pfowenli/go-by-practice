@@ -52,7 +52,7 @@ func FindStudentById(id int) Student {
 
 	student := Student{}
 
-	for rows.Next() {
+	if rows.Next() {
 		err := rows.Scan(&student.id, &student.name, &student.grade)
 		failOnError(err, "Failed to copy values")
 	}
