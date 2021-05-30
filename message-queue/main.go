@@ -1,19 +1,34 @@
 package main
 
-import "log"
+import (
+	"time"
+)
+
+const (
+	host     string = "localhost:5672"
+	username string = "guest"
+	password string = "guest"
+	queue    string = "beverage"
+)
 
 func main() {
-	message := "Black Tea"
-	log.Printf("message: %s", message)
+	messages := []string{"Black Tea", "Americano", "Latte", "Lemonade"}
 
-	producer := NewMessageProducer(
-		"localhost:5672",
-		"guest",
-		"guest",
-		"beverage",
-	)
+	consumer := NewMessageConsumer(host, username, password, queue)
+	consumer.Initialize()
+	defer consumer.Terminate()
+
+	producer := NewMessageProducer(host, username, password, queue)
 	producer.Initialize()
 	defer producer.Terminate()
 
-	producer.SendPlainTextMessage(message)
+	done := make(chan bool, len(messages))
+	go consumer.ReceiveMessage(done)
+
+	for index, message := range messages {
+		time.Sleep(time.Duration(index) * time.Second)
+		producer.SendPlainTextMessage(message)
+	}
+
+	<-done
 }
