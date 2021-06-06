@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -31,6 +33,9 @@ func NewRouter() *mux.Router {
 		Path("/json-body").
 		Methods("POST").
 		HandlerFunc(jsonBody)
+
+	router.PathPrefix("/").
+		Handler(http.FileServer(http.Dir("./static")))
 
 	return router
 }
